@@ -1,0 +1,1041 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Dejepis do vrecka: Rusko 1917 a vznik Československej republiky. Študijný materiál pre mobil.">
+<meta name="theme-color" content="#f5f6f8">
+<title>Dejepis do vrecka</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: mobile-first study reader. One chapter per screen, sticky top bar (where am I), fixed bottom bar (back / progress / next).
+   Parts are color-coded: Rusko = red, ČSR = blue, Opakovanie = green. Light theme only, as the user asked. */
+:root {
+  color-scheme: light;
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --ink: #1b222d;
+  --muted: #5a6472;
+  --line: #dde2e8;
+  --red: #a3322b;     --red-soft: #f8e9e7;
+  --blue: #2356a3;    --blue-soft: #e7eef9;
+  --green: #2f6b46;   --green-soft: #e3f1e7;
+  --mark: #cdeed5;
+  --add: #7a5a00;     --add-soft: #fbf3d9;
+  --font-head: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Literata", Georgia, "Times New Roman", serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --bar-h: 64px;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 1.125rem; line-height: 1.65;
+}
+.page { max-width: 38rem; margin: 0 auto; padding: 0 18px; padding-block: 8px calc(var(--bar-h) + 40px + env(safe-area-inset-bottom, 0px)); }
+
+h1, h2, h3, h4 { font-family: var(--font-head); line-height: 1.2; text-wrap: balance; margin: 0; }
+p { margin: 0.75rem 0; }
+ul, ol { padding-left: 1.25rem; margin: 0.6rem 0; }
+li { margin: 0.4rem 0; }
+li::marker { color: var(--muted); }
+strong { font-weight: 600; }
+mark { background: var(--mark); color: inherit; padding: 0 0.15em; border-radius: 3px; }
+a { color: inherit; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; border-radius: 6px; }
+
+.date { font-family: var(--font-mono); font-size: 0.88em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tag { font-family: var(--font-head); font-size: 0.66rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--add); background: var(--add-soft); border-radius: 4px; padding: 1px 5px; vertical-align: 2px; white-space: nowrap; }
+
+/* ---------- Part colors ---------- */
+[data-part="r"] { --c: var(--red);   --c-soft: var(--red-soft); }
+[data-part="c"] { --c: var(--blue);  --c-soft: var(--blue-soft); }
+[data-part="o"] { --c: var(--green); --c-soft: var(--green-soft); }
+
+/* ---------- Top bar ---------- */
+.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10;
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+.top-in { max-width: 38rem; margin: 0 auto; padding: 10px 18px; display: flex; align-items: center; gap: 12px; }
+.top-title { flex: 1; min-width: 0; font-family: var(--font-head); font-size: 0.82rem; font-weight: 600; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.top-title b { color: var(--c, var(--ink)); font-weight: 700; }
+.top-btn { flex: none; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 14px; font-family: var(--font-head); font-size: 0.85rem; font-weight: 600; cursor: pointer; }
+.top-prog { height: 3px; background: var(--line); }
+.top-prog i { display: block; height: 100%; width: 0; background: var(--c, var(--green)); transition: width .3s ease; }
+
+/* ---------- Bottom bar ---------- */
+.bar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+  background: var(--surface); border-top: 1px solid var(--line);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.bar-in { max-width: 38rem; margin: 0 auto; height: var(--bar-h); padding: 0 12px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; }
+.bar button { min-height: 44px; border: 0; background: none; font-family: var(--font-head); font-weight: 600; font-size: 0.95rem; cursor: pointer; border-radius: 10px; padding: 0 12px; }
+.bar .prev { justify-self: start; color: var(--muted); }
+.bar .next { justify-self: end; background: var(--c, var(--ink)); color: #fff; padding: 0 18px; }
+.bar .count { font-family: var(--font-mono); font-size: 0.85rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.bar button:disabled { visibility: hidden; }
+
+/* ---------- Home ---------- */
+.home-h { padding-top: 28px; }
+.eyebrow { font-family: var(--font-head); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 600; }
+.home-h h1 { font-size: 2.1rem; font-weight: 700; margin-top: 6px; letter-spacing: -0.01em; }
+.home-h p { color: var(--muted); font-size: 1rem; }
+.progress { margin-top: 18px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+.progress-row { display: flex; justify-content: space-between; align-items: baseline; font-family: var(--font-head); font-weight: 600; font-size: 0.95rem; }
+.progress-row span:last-child { font-family: var(--font-mono); font-size: 0.9rem; color: var(--muted); }
+.meter { height: 8px; background: var(--line); border-radius: 99px; margin-top: 10px; overflow: hidden; }
+.meter i { display: block; height: 100%; width: 0; background: var(--green); border-radius: 99px; transition: width .3s ease; }
+.continue { display: block; width: 100%; margin-top: 12px; text-align: left; border: 0; border-radius: 12px; padding: 14px 16px; background: var(--ink); color: #fff; cursor: pointer; font-family: var(--font-head); }
+.continue small { display: block; font-size: 0.75rem; opacity: 0.75; text-transform: uppercase; letter-spacing: 0.08em; }
+.continue span { font-size: 1.05rem; font-weight: 600; }
+
+.toc-part { margin-top: 28px; }
+.toc-part h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--c); display: flex; justify-content: space-between; }
+.toc-part h2 span { font-family: var(--font-mono); letter-spacing: 0; color: var(--muted); font-weight: 500; }
+.toc-list { list-style: none; padding: 0; margin: 10px 0 0; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.toc-list li { margin: 0; border-top: 1px solid var(--line); }
+.toc-list li:first-child { border-top: 0; }
+.toc-list button { width: 100%; display: grid; grid-template-columns: 28px 1fr 22px; gap: 10px; align-items: center; text-align: left; background: none; border: 0; padding: 13px 14px; cursor: pointer; min-height: 52px; }
+.toc-list .num { font-family: var(--font-mono); font-size: 0.85rem; color: var(--c); }
+.toc-list .t { font-family: var(--font-head); font-weight: 600; font-size: 1rem; line-height: 1.3; }
+.check { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--line); display: grid; place-items: center; }
+.done .check { background: var(--green); border-color: var(--green); }
+.done .check::after { content: ""; width: 6px; height: 11px; border: solid #fff; border-width: 0 2.5px 2.5px 0; transform: translateY(-1px) rotate(45deg); }
+.legend { margin-top: 24px; font-size: 0.9rem; color: var(--muted); display: grid; gap: 6px; }
+
+/* ---------- Chapter ---------- */
+.ch-h { padding-top: 22px; }
+.kicker { font-family: var(--font-head); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--c); }
+.ch-h h2 { font-size: 1.75rem; font-weight: 700; margin-top: 6px; letter-spacing: -0.01em; }
+
+.sum { margin-top: 18px; background: var(--c-soft); border-radius: 14px; padding: 16px 18px; }
+.sum-t { font-family: var(--font-head); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--c); }
+.sum ul { margin: 8px 0 0; padding-left: 1.1rem; }
+.sum li { margin: 0.45rem 0; line-height: 1.5; }
+.sum li::marker { color: var(--c); }
+
+.body h3 { font-size: 1.2rem; font-weight: 700; margin-top: 2rem; margin-bottom: 0.4rem; padding-top: 1.2rem; border-top: 1px solid var(--line); }
+.body h3:first-child { border-top: 0; padding-top: 0; margin-top: 1.6rem; }
+.body h4 { font-size: 1.02rem; font-weight: 600; margin-top: 1.2rem; }
+
+.box { border-radius: 12px; padding: 12px 16px; margin: 1rem 0; font-size: 1rem; line-height: 1.6; }
+.box > :first-child { margin-top: 0; }
+.box > :last-child { margin-bottom: 0; }
+.box .bt { display: block; font-family: var(--font-head); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+.term { background: var(--surface); border: 1px solid var(--line); }
+.term .bt { color: var(--muted); }
+.warn { background: var(--add-soft); }
+.warn .bt { color: var(--add); }
+
+/* cards stacked on phone, side by side when there is room */
+.pair { display: grid; gap: 10px; margin: 1rem 0; }
+@media (min-width: 560px) { .pair { grid-template-columns: 1fr 1fr; } }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; font-size: 1rem; line-height: 1.55; min-width: 0; }
+.card h4 { margin: 0 0 4px; font-size: 1rem; }
+.card .role { font-family: var(--font-head); font-size: 0.78rem; font-weight: 600; color: var(--c); }
+.card p { margin: 0.4rem 0 0; }
+
+/* timeline: date on its own line, easy to scan on a phone */
+.tl { list-style: none; padding: 0 0 0 16px; margin: 1rem 0; border-left: 2px solid var(--line); }
+.tl li { position: relative; margin: 0 0 14px; }
+.tl li::before { content: ""; position: absolute; left: -22px; top: 7px; width: 10px; height: 10px; border-radius: 50%; background: var(--c); }
+.tl .d { display: block; font-family: var(--font-mono); font-size: 0.85rem; color: var(--c); font-variant-numeric: tabular-nums; }
+
+/* party tree */
+.tree { margin: 1rem 0; display: grid; gap: 8px; font-family: var(--font-head); font-size: 0.92rem; }
+.tree .node { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; text-align: center; }
+.tree .node small { display: block; font-family: var(--font-body); font-size: 0.84rem; color: var(--muted); }
+.tree .root { background: var(--c-soft); border-color: transparent; font-weight: 700; }
+.tree .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.tree .hot { outline: 2px solid var(--c); outline-offset: -2px; font-weight: 700; }
+.tree .sub { border-left: 2px solid var(--line); padding-left: 10px; display: grid; gap: 8px; }
+.tree .lbl { font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+
+/* worksheet documents */
+.doc { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin: 12px 0; font-size: 1rem; line-height: 1.55; }
+.doc-h { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.doc-h h4 { margin: 0; font-size: 1.08rem; flex-basis: 100%; }
+.doc-h .date { color: var(--muted); }
+.pill { font-family: var(--font-head); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; border-radius: 999px; padding: 2px 10px; white-space: nowrap; }
+.pill.dom { background: var(--mark); color: var(--ink); }
+.pill.zah { background: var(--blue-soft); color: var(--blue); }
+.doc dl { margin: 10px 0 0; }
+.doc dt { font-family: var(--font-head); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-top: 8px; }
+.doc dd { margin: 2px 0 0; }
+.doc blockquote { margin: 10px 0 0; padding-left: 12px; border-left: 2px solid var(--line); color: var(--muted); font-style: italic; }
+
+/* quiz */
+details { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; margin: 8px 0; }
+summary { cursor: pointer; font-weight: 600; padding: 12px 16px; list-style-position: outside; }
+details p { margin: 0; padding: 0 16px 14px; }
+
+/* chapter footer */
+.ch-end { margin-top: 2.4rem; padding-top: 1.2rem; border-top: 1px solid var(--line); display: grid; gap: 10px; }
+.learn { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; border: 2px solid var(--line); background: var(--surface); border-radius: 14px; padding: 10px 16px; cursor: pointer; font-family: var(--font-head); font-weight: 600; font-size: 1.02rem; text-align: left; }
+.learn .check { flex: none; }
+.learn[aria-pressed="true"] { border-color: var(--green); background: var(--green-soft); color: var(--green); }
+.learn[aria-pressed="true"] .check { background: var(--green); border-color: var(--green); }
+.learn[aria-pressed="true"] .check::after { content: ""; width: 6px; height: 11px; border: solid #fff; border-width: 0 2.5px 2.5px 0; transform: translateY(-1px) rotate(45deg); }
+.ch-end small { color: var(--muted); font-size: 0.85rem; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<header class="top" id="top">
+  <div class="top-in">
+    <div class="top-title" id="topTitle"><b>Dejepis</b></div>
+    <button class="top-btn" id="tocBtn" type="button">Obsah</button>
+  </div>
+  <div class="top-prog"><i id="topProg"></i></div>
+</header>
+
+<main class="page" id="page">
+
+<!-- ================= HOME ================= -->
+<section id="domov" class="home">
+  <div class="home-h">
+    <div class="eyebrow">Dejepis · písomka 7. 10.</div>
+    <h1>Rusko 1917 a vznik ČSR</h1>
+    <p>Jedna kapitola na obrazovku. Najprv si prečítaj zhrnutie, potom podrobnosti. Keď kapitolu vieš, označ ju.</p>
+  </div>
+  <div class="progress">
+    <div class="progress-row"><span>Naučené</span><span id="progTxt">0 / 0</span></div>
+    <div class="meter"><i id="progBar"></i></div>
+  </div>
+  <button class="continue" id="continueBtn" type="button"><small id="continueLbl">Začni tu</small><span id="continueTitle"></span></button>
+  <div id="tocWrap"></div>
+  <div class="legend">
+    <span><mark>zvýraznené</mark> = kľúčový pojem</span>
+    <span><span class="tag">doplnené</span> = nebolo v poznámkach, doplnené z učebnicových a webových zdrojov</span>
+  </div>
+</section>
+
+<!-- ================= RUSKO ================= -->
+<section class="ch" id="r-priciny" data-part="r" hidden>
+  <header class="ch-h"><div class="kicker"></div><h2>Prečo vypukla revolúcia</h2></header>
+  <div class="sum"><div class="sum-t">V skratke</div><ul>
+    <li>Rusko je zaostalá ríša. Cár <strong>Mikuláš II.</strong> vládne neobmedzene (<strong>samoderžavie</strong>).</li>
+    <li><strong>1. svetová vojna</strong> všetko zhoršila: hlad, drahota, porážky.</li>
+    <li>Nespokojní sú <strong>robotníci, roľníci, armáda</strong> aj <strong>opozícia v Dume</strong>.</li>
+  </ul></div>
+  <div class="body">
+    <h3>Rusko pred revolúciou</h3>
+    <p>Rusko bolo obrovská, ale zaostalá ríša. Vládol jej cár Mikuláš II. ako <mark>samoderžavie</mark>, teda neobmedzená vláda jedného panovníka. Na 1. svetovú vojnu krajina nebola pripravená a vojna všetky problémy zhoršila.</p>
+
+    <h3>Kto bol nespokojný</h3>
+    <h4>Robotníci</h4>
+    <p>Zlé podmienky, nízke mzdy, vo vojne hlad a drahota. Žili <strong>pokope na jednom mieste</strong> (mestá, továrne), preto sa ľahko zorganizovali na <strong>masový protest</strong>.</p>
+    <h4>Roľníci</h4>
+    <p>Chceli <mark>agrárnu reformu</mark>, teda rozdeliť pôdu veľkostatkárov. Vojna im brala mužov, nemal kto zbierať úrodu. Žili <strong>roztrúsene</strong> po dedinách, preto sa organizovali ťažšie.</p>
+    <h4>Armáda</h4>
+    <p>Zlá výzbroj a zásobovanie, obrovské straty. Od roku 1915 jej velil <strong>osobne cár</strong>, hoci bol vo vojenstve amatér. Za porážky preto ľudia vinili priamo jeho. <span class="tag">doplnené: 1915</span></p>
+    <h4>Odporcovia režimu a cára</h4>
+    <p>Liberáli, demokrati, socialisti a anarchisti mali hlas v <strong>Dume</strong>, tá však mala moc len formálne.</p>
+
+    <div class="box term"><span class="bt">Pojem: Duma</span>
+      <p>Ruský parlament, ktorý cár povolil po revolúcii v roku 1905. Mal len obmedzenú moc a cár ho mohol kedykoľvek rozpustiť. <span class="tag">doplnené</span></p>
+    </div>
+  </div>
+</section>
+
+<section class="ch" id="r-februar" data-part="r" hidden>
+  <header class="ch-h"><div class="kicker"></div><h2>Februárová revolúcia a dvojvládie</h2></header>
+  <div class="sum"><div class="sum-t">V skratke</div><ul>
+    <li>Február 1917 (u nás marec): <strong>štrajky a vzbura vojakov</strong> v Petrohrade.</li>
+    <li><span class="date">15. 3. 1917</span> abdikuje <strong>Mikuláš II.</strong>, monarchia končí.</li>
+    <li>Vzniká <mark>dvojvládie</mark>: <strong>Dočasná vláda</strong> (Ľvov) a <strong>soviety</strong> (hlavný je Petrohradský).</li>
+    <li>Dočasná vláda pokračuje vo vojne, preto stráca podporu.</li>
+  </ul></div>
+  <div class="body">
+    <div class="box term"><span class="bt">Pozor na dva kalendáre</span>
+      <p>Rusko používalo <strong>juliánsky kalendár</strong>, o 13 dní pozadu za naším. Preto „februárová“ revolúcia bola podľa nás v marci a „októbrová“ v novembri. Každá udalosť má dva dátumy. <span class="tag">doplnené</span></p>
+    </div>
+
+    <h3>Priebeh</h3>
+    <p>Demonštrácie za chlieb prerástli na <mark>generálny štrajk</mark>. Keď sa pridali vojaci, cár stratil kontrolu nad Petrohradom. Revolúcia bola namierená proti samoderžaviu.</p>
+    <ul class="tl">
+      <li><span class="d">23. 2. / 8. 3.</span>Demonštrácie žien za chlieb. <span class="tag">doplnené</span></li>
+      <li><span class="d">27. 2. / 12. 3.</span>Vojaci sa pridávajú. Vzniká <strong>Dočasný výbor Štátnej dumy</strong> a <strong>Petrohradský soviet</strong>.</li>
+      <li><span class="d">2. 3. / 15. 3.</span><strong>Abdikácia Mikuláša II.</strong> Brat Michail korunu odmietol, monarchia končí. <span class="tag">doplnené: Michail</span></li>
+    </ul>
+
+    <h3>Dvojvládie</h3>
+    <p>Moc si rozdelili dva orgány naraz:</p>
+    <div class="pair">
+      <div class="card">
+        <h4>Dočasná vláda</h4>
+        <div class="role">vznikla z Dumy · knieža G. Ľvov, od júla Kerenskij</div>
+        <p>Liberáli a umiernení. Zaviedla novinky ako kedysi <strong>Francúzska revolúcia</strong>: <strong>zrušila cenzúru</strong>, zaručila <strong>občianske práva</strong>.</p>
+      </div>
+      <div class="card">
+        <h4>Soviety</h4>
+        <div class="role">rady robotníkov a vojakov · hlavný Petrohradský</div>
+        <p>Ľavica. Najprv vznikali <strong>lokálne</strong>. Riešili, čo ľudia naozaj potrebovali (jedlo, práca, <strong>koniec vojny</strong>), nie cenzúru.</p>
+      </div>
+    </div>
+    <div class="box term"><span class="bt">Pojem: soviet</span>
+      <p>Po rusky „rada“. Volené rady robotníkov, vojakov a neskôr aj roľníkov. Odtiaľ <em>Sovietsky zväz</em>.</p>
+    </div>
+
+    <h3>Čo s vojnou?</h3>
+    <p>Na tejto otázke dvojvládie stroskotalo. Dočasná vláda <strong>pokračovala vo vojne</strong>, hoci ľudia chceli mier, a neurobila pozemkovú reformu. Jej podpora klesala a to využili boľševici. <span class="tag">doplnené</span></p>
+  </div>
+</section>
+
+<section class="ch" id="r-strany" data-part="r" hidden>
+  <header class="ch-h"><div class="kicker"></div><h2>Boľševici, menševici, eseri</h2></header>
+  <div class="sum"><div class="sum-t">V skratke</div><ul>
+    <li><strong>Boľševici</strong> (Lenin): revolúcia <strong>hneď</strong>.</li>
+    <li><strong>Menševici</strong>: revolúcia až <strong>cez kapitalizmus</strong>.</li>
+    <li><strong>Sociálni demokrati</strong>: <strong>reformy</strong> namiesto revolúcie.</li>
+    <li><strong>Eseri (SR)</strong> = socialisti-revolucionári, <strong>roľnícka</strong> strana, nie marxisti.</li>
+  </ul></div>
+  <div class="body">
+    <h3>Schéma</h3>
+    <div class="tree" role="img" aria-label="Sociálne hnutie sa delí na marxizmus, sociálnu demokraciu a eserov. Marxizmus sa delí na boľševikov a menševikov.">
+      <div class="node root">Sociálne hnutie</div>
+      <div class="sub">
+        <div class="node">Marxizmus<small>revolúcia, vláda robotníkov</small></div>
+        <div class="row">
+          <div class="node hot">Boľševici<small>revolúcia HNEĎ</small></div>
+          <div class="node hot">Menševici<small>cez kapitalizmus</small></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="node">Soc. demokracia<small>umiernená, reformy</small></div>
+        <div class="node">Eseri (SR)<small>roľnícki socialisti</small></div>
+      </div>
+    </div>
+
+    <div class="box term"><span class="bt">Pojem: marxizmus</span>
+      <p>Učenie <strong>Marxa a Engelsa</strong>. Robotníci (<mark>proletariát</mark>) sú vykorisťovaní majiteľmi tovární (<mark>buržoáziou</mark>). Zvrhnú ich revolúciou a vznikne beztriedna spoločnosť, <strong>komunizmus</strong>, bez súkromného vlastníctva. <span class="tag">doplnené</span></p>
+    </div>
+
+    <h3>Kto bol kto</h3>
+    <h4>Boľševici</h4>
+    <p>Vodca Lenin. Socialistická revolúcia <strong>okamžite</strong>. Názov znamená „väčšinoví“, pri rozdelení strany v roku 1903 vyhrali jedno hlasovanie.</p>
+    <h4>Menševici</h4>
+    <p>„Menšinoví“. Rusko musí najprv prejsť <strong>kapitalizmom</strong>, až potom príde socializmus. Podporovali Dočasnú vládu.</p>
+    <h4>Sociálna demokracia</h4>
+    <p>Umiernený smer. Postavenie robotníkov zlepšovať <mark>reformami</mark> v parlamente.</p>
+    <h4>Eseri (SR)</h4>
+    <p><strong>SR nie je Slovenská republika.</strong> Skratka strany <strong>socialistov-revolucionárov</strong>. Neboli marxisti, opierali sa o <strong>roľníkov</strong>, chceli dať pôdu tým, čo na nej pracujú. V roku 1917 najpočetnejšia strana. <span class="tag">doplnené</span></p>
+  </div>
+</section>
+
+<section class="ch" id="r-april" data-part="r" hidden>
+  <header class="ch-h"><div class="kicker"></div><h2>Lenin a Aprílové tézy</h2></header>
+  <div class="sum"><div class="sum-t">V skratke</div><ul>
+    <li><strong>Lenin</strong> = vodca boľševikov, <strong>Trockij</strong> = organizátor prevratu a Červenej armády.</li>
+    <li><mark>Aprílové tézy</mark>: žiadna podpora Dočasnej vláde, <strong>„Všetka moc sovietom!“</strong>, <strong>diktatúra proletariátu</strong>.</li>
+    <li>Sľuby: <strong>mier, pôda, kontrola tovární, sebaurčenie národov</strong>.</li>
+  </ul></div>
+  <div class="body">
+    <h3>Osobnosti</h3>
+    <div class="pair">
+      <div class="card">
+        <h4>Vladimir Iľjič Uľjanov – Lenin</h4>
+        <div class="role">vodca boľševikov</div>
+        <p>Počas vojny v exile vo Švajčiarsku. V apríli 1917 ho Nemci pustili do Ruska v zapečatenom vlaku, aby Rusko oslabil. <span class="tag">doplnené</span></p>
+      </div>
+      <div class="card">
+        <h4>Lev Davidovič Trockij</h4>
+        <div class="role">organizátor prevratu</div>
+        <p>V októbri riadil povstanie, potom založil a viedol <strong>Červenú armádu</strong>. <span class="tag">doplnené</span></p>
+      </div>
+    </div>
+
+    <h3>Aprílové tézy</h3>
+    <p>Revolučný program, ktorý Lenin predstavil hneď po návrate:</p>
+    <ul>
+      <li><strong>Žiadna podpora Dočasnej vláde.</strong></li>
+      <li><mark>Diktatúra proletariátu</mark>: vláda robotníkov, ktorá potlačí ostatné triedy.</li>
+      <li>Heslo <strong>„Všetka moc sovietom!“</strong></li>
+    </ul>
+    <h4>Sľuby pre ľudí</h4>
+    <ul>
+      <li>okamžitý <strong>mier</strong>,</li>
+      <li><strong>konfiškácia pôdy</strong> veľkostatkárom,</li>
+      <li><strong>kontrola tovární</strong> cez soviety (robotnícke rady),</li>
+      <li><strong>sebaurčenie</strong> neruských národov.</li>
+    </ul>
+    <p>Skrátene: <strong>„Mier, pôda, chlieb“</strong>. Nikto iný to neponúkal, preto podpora boľševikov rástla. V auguste 1917 sa generál <strong>Kornilov</strong> pokúsil o prevrat a boľševici pri obrane Petrohradu získali zbrane aj prestíž. <span class="tag">doplnené</span></p>
+  </div>
+</section>
+
+<section class="ch" id="r-oktober" data-part="r" hidden>
+  <header class="ch-h"><div class="kicker"></div><h2>Októbrová revolúcia</h2></header>
+  <div class="sum"><div class="sum-t">V skratke</div><ul>
+    <li><span class="date">24.–25. 10. (6.–7. 11.) 1917</span>: <strong>ozbrojený prevrat boľševikov</strong>, pád Dočasnej vlády.</li>
+    <li>Nová vláda: <strong>Rada ľudových komisárov</strong>, predseda Lenin.</li>
+    <li>Prvé dekréty: <strong>o mieri, o pôde</strong>, Deklarácia práv národov Ruska.</li>
+    <li>Potom vypukla <strong>občianska vojna</strong>.</li>
+  </ul></div>
+  <div class="body">
+    <h3>Priebeh</h3>
+    <p>Nebolo to masové povstanie ako vo februári. Bola to organizovaná akcia ozbrojených oddielov (Červená garda, vojaci, námorníci).</p>
+    <ul class="tl">
+      <li><span class="d">24.–25. 10. / 6.–7. 11.</span>Boľševici obsadzujú mosty, pošty, telegraf a stanice.</li>
+      <li><span class="d">25./26. 10. / 7./8. 11.</span>Výstrel z krížnika <strong>Aurora</strong>, útok na <strong>Zimný palác</strong>. Vláda zatknutá, Kerenskij uteká. <span class="tag">doplnené</span></li>
+      <li><span class="d">25.–26. 10.</span><strong>II. zjazd sovietov</strong> schvaľuje novú vládu, <strong>Radu ľudových komisárov</strong> na čele s Leninom. <span class="tag">doplnené</span></li>
+    </ul>
+
+    <h3>Prvé dekréty</h3>
+    <p>Dekrét = nariadenie s platnosťou zákona. Plnili sľuby z Aprílových téz.</p>
+    <h4><mark>Dekrét o mieri</mark></h4>
+    <p>Výzva na okamžitý mier. Výsledok: <strong>Brestlitovský mier</strong> s Nemeckom.</p>
+    <h4><mark>Dekrét o pôde</mark></h4>
+    <p>Zrušil súkromné vlastníctvo pôdy. Pôdu statkárov, cára a cirkvi zobrali <strong>bez náhrady</strong> a dali do užívania <strong>roľníkom</strong>. Tak boľševici získali roľníkov a vojaci utekali z frontu domov po svoj podiel. <span class="tag">doplnené: podrobnosti</span></p>
+    <h4><mark>Deklarácia práv národov Ruska</mark></h4>
+    <p>Rovnosť národov a právo na sebaurčenie až po odtrhnutie. Využili to napr. Fínsko a Poľsko.</p>
+
+    <div class="box warn"><span class="bt">Koniec demokracie</span>
+      <p>Voľby do <strong>Ústavodarného zhromaždenia</strong> (nov. 1917) vyhrali eseri. Boľševici ho v januári 1918 po jednom dni <strong>rozohnali</strong>. Odvtedy vládla jedna strana. <span class="tag">doplnené</span></p>
+    </div>
+  </div>
+</section>
+
+<section class="ch" id="r-vojna" data-part="r" hidden>
+  <header class="ch-h"><div class="kicker"></div><h2>Brestlitovský mier a občianska vojna</h2></header>
+  <div class="sum"><div class="sum-t">V skratke</div><ul>
+    <li><span class="date">3. 3. 1918</span> <strong>Brestlitovský mier</strong>: Rusko odchádza z vojny, stráca veľké územia.</li>
+    <li>1918: vznik <strong>Komunistickej strany</strong>, hlavné mesto <strong>Moskva</strong>.</li>
+    <li><strong>Občianska vojna</strong> 1918–1920/22: <strong>červení vs. bieli</strong>, 7–12 mil. obetí, vyhrali červení.</li>
+  </ul></div>
+  <div class="body">
+    <h3>Brestlitovský mier</h3>
+    <p>Samostatný mier s Nemeckom. Rusko odišlo z vojny, ale prišlo o <strong>Pobaltie, Poľsko, Fínsko a Ukrajinu</strong>. Lenin potreboval mier, aby udržal moc doma. <span class="tag">doplnené: územia</span></p>
+    <p>V roku 1918 sa boľševici premenovali na <strong>Komunistickú stranu</strong> a hlavné mesto sa presunulo z Petrohradu do <strong>Moskvy</strong>.</p>
+
+    <h3>Občianska vojna (1917/18 – 1920/22)</h3>
+    <div class="pair">
+      <div class="card">
+        <h4>Červená armáda</h4>
+        <p>Boľševici, organizátor Trockij. Ovládali stred krajiny.</p>
+      </div>
+      <div class="card">
+        <h4>Biela armáda</h4>
+        <p>Odporcovia boľševikov. Generáli Kolčak, Denikin, Wrangel. Pomáhala im Dohoda. <span class="tag">doplnené</span></p>
+      </div>
+    </div>
+    <ul>
+      <li><strong>7–12 miliónov obetí</strong>, väčšina na hlad, choroby a teror.</li>
+      <li>Júl 1918: boľševici zavraždili <strong>cára s rodinou</strong>. <span class="tag">doplnené</span></li>
+      <li><strong>Československé légie</strong> bojovali na strane <strong>bielych</strong> (spolupracovali, formálne neboli súčasťou bielej armády).</li>
+      <li>Vyhrala <strong>Červená armáda</strong>. Bieli boli roztrieštení.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="ch" id="r-nep" data-part="r" hidden>
+  <header class="ch-h"><div class="kicker"></div><h2>NEP a vznik ZSSR</h2></header>
+  <div class="sum"><div class="sum-t">V skratke</div><ul>
+    <li><strong>Vojnový komunizmus</strong>: štát berie roľníkom obilie, prichádza hlad a povstania.</li>
+    <li><span class="date">1921</span> <mark>NEP</mark>: povolený malý obchod, hospodárstvo sa zotaví.</li>
+    <li><span class="date">30. 12. 1922</span> vzniká <strong>ZSSR</strong>.</li>
+    <li><span class="date">1924</span> zomiera Lenin, <strong>po ňom Stalin</strong>.</li>
+  </ul></div>
+  <div class="body">
+    <h3>Reťazec: pôda, hlad, NEP</h3>
+    <ul class="tl">
+      <li><span class="d">1917</span><strong>Dekrét o pôde</strong>: roľníci dostanú pôdu.</li>
+      <li><span class="d">1918–1921</span><strong>Vojnový komunizmus</strong>: zoštátnený priemysel, zákaz obchodu, ozbrojené oddiely zabavujú obilie. Roľníci prestanú siať viac, než zjedia. <span class="tag">doplnené</span></li>
+      <li><span class="d">1921</span>Hladomor, povstania, vzbura námorníkov v <strong>Kronštadte</strong>. Toto je to „zhoršenie zásob“ z poznámok. <span class="tag">doplnené</span></li>
+      <li><span class="d">1921</span><mark>NEP – Nová ekonomická politika</mark>.</li>
+    </ul>
+
+    <h3>Čo zmenil NEP</h3>
+    <ul>
+      <li>Namiesto zabavovania <strong>naturálna daň</strong>. Zvyšok mohol roľník <strong>predať</strong>, takže sa mu oplatilo vyrábať.</li>
+      <li>Povolené <strong>malé súkromné obchody a dielne</strong>.</li>
+      <li>Veľký priemysel a banky ostali štátu.</li>
+    </ul>
+    <p>Hospodárstvo sa zotavilo. Lenin: <em>„krok späť, aby sme mohli urobiť dva kroky vpred“</em>. Okolo roku 1928 NEP ukončil Stalin. <span class="tag">doplnené</span></p>
+
+    <div class="box term"><span class="bt">Na skúšku</span>
+      <p><strong>Dekrét o pôde</strong> rieši, <strong>kto dostane pôdu</strong>. <strong>NEP</strong> rieši, <strong>ako sa hospodári a obchoduje</strong>.</p>
+    </div>
+
+    <h3>ZSSR a koniec Lenina</h3>
+    <p><span class="date">30. 12. 1922</span> vznikol <mark>Zväz sovietskych socialistických republík</mark> z Ruska, Ukrajiny, Bieloruska a Zakaukazska. <span class="tag">doplnené: členovia</span></p>
+    <p>Lenin viedol vládu (Radu ľudových komisárov) <strong>od októbra 1917</strong> do smrti <span class="date">21. 1. 1924</span>. Od roku 1922 bol vážne chorý. <strong>Po Leninovi</strong> prevzal moc <strong>Josif Stalin</strong>.</p>
+  </div>
+</section>
+
+<section class="ch" id="r-vyznam" data-part="r" hidden>
+  <header class="ch-h"><div class="kicker"></div><h2>Význam VOSR</h2></header>
+  <div class="sum"><div class="sum-t">V skratke</div><ul>
+    <li><strong>VOSR</strong> = Veľká októbrová socialistická revolúcia.</li>
+    <li><strong>Nový model riadenia štátu</strong>: vláda jednej strany.</li>
+    <li><strong>2. proletárska revolúcia</strong> (1. bola Parížska komúna).</li>
+    <li>Inšpirovala <strong>republiky rád</strong> 1919.</li>
+    <li>Učenie Marxa a Engelsa prispôsobil Lenin, vznikol <strong>marxizmus-leninizmus</strong>.</li>
+  </ul></div>
+  <div class="body">
+    <h3>Podrobnejšie</h3>
+    <ul>
+      <li><strong>Nový model štátu:</strong> vláda jednej strany v mene robotníkov, štátne vlastníctvo, plánované hospodárstvo.</li>
+      <li><strong>2. proletárska revolúcia:</strong> za prvú marxisti považovali <strong>Parížsku komúnu</strong> (1871). <span class="tag">doplnené: 1871</span></li>
+      <li><mark>Republiky rád</mark> (1919, krátke trvanie):
+        <ul>
+          <li>Bavorská (apríl–máj),</li>
+          <li>Maďarská (marec–august, Béla Kun),</li>
+          <li>Slovenská (jún–júl, Prešov). <span class="tag">doplnené: dátumy</span></li>
+        </ul>
+      </li>
+      <li><mark>Marxizmus-leninizmus:</mark> revolúciu vedie úzka disciplinovaná strana a dá sa urobiť aj v zaostalej roľníckej krajine.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= ČSR ================= -->
+<section class="ch" id="c-priciny" data-part="c" hidden>
+  <header class="ch-h"><div class="kicker"></div><h2>Pozadie a príčiny vzniku ČSR</h2></header>
+  <div class="sum"><div class="sum-t">V skratke</div><ul>
+    <li>Česi v <strong>rakúskej</strong>, Slováci v <strong>uhorskej</strong> časti Rakúsko-Uhorska. Slováci čelia <strong>maďarizácii</strong>.</li>
+    <li>Príčiny <strong>historické</strong>: české štátne právo.</li>
+    <li>Príčiny <strong>ideologické</strong>: čechoslovakizmus.</li>
+    <li>Príčiny <strong>politické</strong>: vojna, domáci a zahraničný odboj, sebaurčenie, osobnosti.</li>
+  </ul></div>
+  <div class="body">
+    <h3>Východisková situácia</h3>
+    <p>Pred rokom 1918 Česi a Slováci nežili v spoločnom štáte. Rakúsko-Uhorsko sa od roku 1867 delilo na dve polovice: <span class="tag">doplnené</span></p>
+    <div class="pair">
+      <div class="card"><h4>Česi</h4><p><strong>Rakúska</strong> časť. Mali parlament, školy, priemysel.</p></div>
+      <div class="card"><h4>Slováci</h4><p><strong>Uhorská</strong> časť. Tvrdá <mark>maďarizácia</mark>, takmer žiadne slovenské stredné školy.</p></div>
+    </div>
+    <p>Pre Slovákov bolo spojenie s Čechmi šancou prežiť ako národ.</p>
+
+    <h3>Príčiny</h3>
+    <h4>Historické</h4>
+    <p>Česi sa odvolávali na <mark>historické štátne právo</mark>: České kráľovstvo už kedysi bolo samostatné.</p>
+    <h4>Ideologické</h4>
+    <p><mark>Čechoslovakizmus</mark>: Česi a Slováci sú jeden „československý“ národ s dvoma vetvami. Argument pre spoločný štát. Slovákom neskôr prekážal, lebo popieral ich samostatný národ. <span class="tag">doplnené</span></p>
+    <h4>Politické</h4>
+    <ul>
+      <li>1. svetová vojna oslabila Rakúsko-Uhorsko,</li>
+      <li>domáci a zahraničný odboj,</li>
+      <li><mark>právo národov na sebaurčenie</mark> (Wilson aj Lenin),</li>
+      <li>osobnosti: Masaryk, Štefánik, Beneš.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="ch" id="c-zahr1" data-part="c" hidden>
+  <header class="ch-h"><div class="kicker"></div><h2>Zahraničný odboj 1915–1916</h2></header>
+  <div class="sum"><div class="sum-t">V skratke</div><ul>
+    <li>Vodcovia: <strong>Masaryk, Štefánik, Beneš</strong>.</li>
+    <li><span class="date">1915</span> <strong>Independent Bohemia</strong> (Masaryk): spoločný štát, konštitučná monarchia.</li>
+    <li><span class="date">1915</span> <strong>Clevelandská dohoda</strong> (USA): federácia, samostatné Slovensko.</li>
+    <li><span class="date">1916</span> <strong>ČSNR</strong> v Paríži: Masaryk predseda, Štefánik podpredseda, Beneš tajomník.</li>
+  </ul></div>
+  <div class="body">
+    <p><strong>Odboj</strong> = organizovaný odpor proti Rakúsko-Uhorsku. Zahraničný odboj pôsobil v štátoch Dohody a presviedčal ich, aby po vojne uznali nový štát.</p>
+
+    <h3>Osobnosti</h3>
+    <div class="card" style="margin:10px 0"><h4>Tomáš Garrigue Masaryk</h4><div class="role">predseda ČSNR · neskôr 1. prezident</div><p>Profesor filozofie, vodca odboja, ktorému verila Dohoda.</p></div>
+    <div class="card" style="margin:10px 0"><h4>Milan Rastislav Štefánik</h4><div class="role">podpredseda ČSNR · légie</div><p>Slovák, astronóm, francúzsky generál. Organizoval légie. Zahynul 4. 5. 1919. <span class="tag">doplnené</span></p></div>
+    <div class="card" style="margin:10px 0"><h4>Edvard Beneš</h4><div class="role">tajomník ČSNR · diplomacia</div><p>Diplomat v Paríži, neskôr minister zahraničia a 2. prezident. <span class="tag">doplnené</span></p></div>
+
+    <h3>1915</h3>
+    <h4><mark>Independent Bohemia</mark></h4>
+    <p>Memorandum <strong>Masaryka</strong> pre britskú vládu (apríl 1915, minister Grey). Navrhuje <strong>spojenie Čechov a Slovákov</strong> ako <strong>konštitučnú monarchiu</strong> (kráľovstvo s ústavou). <span class="tag">doplnené: Grey</span></p>
+    <h4><mark>Clevelandská dohoda</mark> <span class="date">22. 10. 1915</span></h4>
+    <p><strong>Slovenská liga</strong> a <strong>České národné združenie</strong> v USA. Spoločný štát ako <strong>federácia</strong> so <strong>samostatnosťou Slovenska</strong>. <span class="tag">doplnené: obsah</span></p>
+
+    <h3>1916: Česko-slovenská národná rada</h3>
+    <ul>
+      <li>Vznikla v <strong>Paríži</strong>. <strong>Ústredný orgán zahraničného odboja</strong>, akoby vláda v exile.</li>
+      <li>Masaryk <strong>predseda</strong>, Štefánik <strong>podpredseda</strong> (légie), Beneš <strong>tajomník</strong>.</li>
+      <li>1918 ju Dohoda uznala ako <strong>reprezentantku budúcej ČSR</strong>.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="ch" id="c-zahr2" data-part="c" hidden>
+  <header class="ch-h"><div class="kicker"></div><h2>Zahraničný odboj 1918</h2></header>
+  <div class="sum"><div class="sum-t">V skratke</div><ul>
+    <li><span class="date">8. 1.</span> <strong>14 bodov Wilsona</strong>.</li>
+    <li><span class="date">30. 5.</span> <strong>Pittsburská dohoda</strong>: ČSR a autonómia Slovenska.</li>
+    <li><span class="date">14. 10.</span> <strong>dočasná vláda</strong> v Paríži.</li>
+    <li><span class="date">18. 10.</span> <strong>Washingtonská deklarácia</strong>: nezávislosť, republika.</li>
+  </ul></div>
+  <div class="body">
+    <h3>14 bodov prezidenta Wilsona</h3>
+    <p>Plán povojnového sveta (<span class="date">8. 1. 1918</span>). Bod 10 sľuboval národom Rakúsko-Uhorska len autonómiu. Na jeseň Wilson uznal, že majú právo na samostatnosť. <span class="tag">doplnené</span></p>
+
+    <h3><mark>Pittsburská dohoda</mark> <span class="date">30. 5. 1918</span></h3>
+    <p>Podpísali <strong>Slovenská liga, České národné združenie a Zväz českých katolíkov</strong> v USA za prítomnosti Masaryka.</p>
+    <ul>
+      <li>po vojne vznikne <strong>ČSR</strong>,</li>
+      <li>Slovensko bude mať <strong>autonómiu</strong>: vlastnú administratívu, snem, súdy,</li>
+      <li><strong>slovenčina</strong> úradným jazykom v škole, na úrade, vo verejnom živote,</li>
+      <li>štát bude <strong>republika</strong>.</li>
+    </ul>
+    <p>Neskôr sa nedodržala a Hlinka sa na ňu odvolával celé medzivojnové obdobie. <span class="tag">doplnené</span></p>
+
+    <div class="box warn"><span class="bt">Nepomýľ si</span>
+      <p><strong>Clevelandská</strong> (1915) = federácia, samostatné Slovensko. <strong>Pittsburská</strong> (1918, aj Masaryk) = spoločná ČSR, autonómia Slovenska.</p>
+    </div>
+
+    <h3>Dočasná vláda <span class="date">14. 10. 1918</span></h3>
+    <p>Vyhlásil ju Beneš v Paríži, ČSNR sa zmenila na vládu.</p>
+    <ul>
+      <li><strong>Masaryk</strong>: predseda vlády a minister financií,</li>
+      <li><strong>Štefánik</strong>: minister národnej obrany,</li>
+      <li><strong>Beneš</strong>: minister zahraničia a vnútra.</li>
+    </ul>
+
+    <h3><mark>Washingtonská deklarácia</mark> <span class="date">18. 10. 1918</span></h3>
+    <p><strong>Vyhlásenie nezávislosti</strong> dočasnou vládou. Masaryk ju vydal vo Washingtone a <strong>odovzdal vláde USA</strong>, takže ČSR získala podporu USA.</p>
+    <ul>
+      <li>inšpirácia: <strong>americká Deklarácia nezávislosti</strong>, <strong>Lincoln</strong>, <strong>Deklarácia práv človeka</strong>, „národ Komenského“,</li>
+      <li><strong>republika</strong> so slobodou svedomia, náboženstva, tlače,</li>
+      <li><strong>cirkev oddelená od štátu</strong>,</li>
+      <li><strong>všeobecné volebné právo</strong>, <strong>ženy rovnoprávne</strong>,</li>
+      <li><strong>ochrana menšín</strong>.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="ch" id="c-legie" data-part="c" hidden>
+  <header class="ch-h"><div class="kicker"></div><h2>Československé légie</h2></header>
+  <div class="sum"><div class="sum-t">V skratke</div><ul>
+    <li>Okolo <strong>100 000 dobrovoľníkov</strong> v <strong>Rusku, Francúzsku a Taliansku</strong>.</li>
+    <li>Bitky: <strong>Zborov</strong> 1917, <strong>Bachmač</strong> 1918.</li>
+    <li>V Rusku bojovali na strane <strong>bielych</strong>, domov išli cez Sibír.</li>
+    <li>Vďaka nim <strong>víťazi brali odboj vážne</strong>.</li>
+  </ul></div>
+  <div class="body">
+    <h3>Čo boli légie</h3>
+    <p>Dobrovoľnícke jednotky na strane Dohody. Hlavne <strong>zajatci a dezertéri</strong> z rakúsko-uhorskej armády a krajania v zahraničí. Budúci štát mal vďaka nim „vlastnú armádu“ a Dohoda ho brala ako spojenca.</p>
+
+    <h3>Kde bojovali</h3>
+    <div class="card" style="margin:10px 0"><h4>Rusko (1914–1920)</h4><div class="role">až ~70 000 mužov</div><p>Zborov (2. 7. 1917), Bachmač (1918). <span class="tag">doplnené: bitky</span></p></div>
+    <div class="card" style="margin:10px 0"><h4>Francúzsko</h4><div class="role">~10 000 mužov <span class="tag">doplnené</span></div><p>Arras (1915, rota Nazdar), Terron (1918).</p></div>
+    <div class="card" style="margin:10px 0"><h4>Taliansko</h4><div class="role">~20 000 mužov <span class="tag">doplnené</span></div><p>Doss Alto (1918).</p></div>
+
+    <h3>Sibírska anabáza</h3>
+    <p>Po Brestlitovskom mieri chceli légie na západný front. Išli <strong>po Transsibírskej magistrále do Vladivostoku</strong> a loďami okolo sveta. Cestou bojovali s boľševikmi po boku <strong>bielej armády</strong>. Domov sa vrátili v roku 1920. <span class="tag">doplnené</span></p>
+
+    <h3>Po vojne</h3>
+    <p><strong>Legionári boli v ČSR vážení</strong>, dostávali lepšiu prácu v štátnej službe (úradníci, učitelia).</p>
+  </div>
+</section>
+
+<section class="ch" id="c-domaci" data-part="c" hidden>
+  <header class="ch-h"><div class="kicker"></div><h2>Domáci odboj</h2></header>
+  <div class="sum"><div class="sum-t">V skratke</div><ul>
+    <li><span class="date">1914</span> pasivita, <span class="date">1916</span> nastupuje Karol I.</li>
+    <li><span class="date">6. 1. 1918</span> <strong>Trojkráľová deklarácia</strong>.</li>
+    <li><span class="date">1. 5. 1918</span> <strong>Mikulášska rezolúcia</strong> (Šrobár), verejne.</li>
+    <li><span class="date">24. 5. 1918</span> <strong>tajná porada v Martine</strong> (Hlinka).</li>
+    <li><span class="date">13. 7. 1918</span> <strong>Národný výbor</strong> v Prahe (Kramář).</li>
+  </ul></div>
+  <div class="body">
+    <p>Domáci odboj pôsobil priamo v monarchii, preto bol opatrný. Hrozilo väzenie aj trest smrti.</p>
+    <ul class="tl">
+      <li><span class="d">1914</span>Po vyhlásení vojny <strong>pasivita</strong>, prísna cenzúra. <strong>Kramář a Rašín</strong> odsúdení na smrť, neskôr omilostení. <span class="tag">doplnené</span></li>
+      <li><span class="d">21. 11. 1916</span>Zomrel <strong>František Jozef I.</strong>, nastúpil <strong>Karol I.</strong>, zmiernil represie.</li>
+      <li><span class="d">17. 5. 1917</span><strong>Manifest českých spisovateľov</strong>. <span class="tag">doplnené</span></li>
+      <li><span class="d">6. 1. 1918</span><mark>Trojkráľová deklarácia</mark>: českí poslanci žiadajú štát Čechov <strong>a Slovákov</strong>.</li>
+      <li><span class="d">1. 5. 1918</span><mark>Mikulášska rezolúcia</mark>: <strong>verejné</strong> prvomájové zhromaždenie robotníkov v Liptovskom Mikuláši. Prečítal <strong>Vavro Šrobár</strong>.</li>
+      <li><span class="d">24. 5. 1918</span><strong>Tajná porada</strong> v Turčianskom Sv. Martine (Dula – SNS, Hlinka – SĽS). <strong>Vyvrcholenie slovenského domáceho odboja.</strong></li>
+      <li><span class="d">13. 7. 1918</span><mark>Národný výbor československý</mark> v Prahe, najvyšší orgán domáceho odboja. Predseda <strong>Kramář</strong>. <span class="tag">doplnené: Kramář</span></li>
+    </ul>
+
+    <h3>Mikulášska rezolúcia</h3>
+    <p>Nebolo to rokovanie, ale <strong>verejné zhromaždenie</strong>. Sviatok práce bol zámienka, politické stretnutia boli počas vojny nebezpečné.</p>
+    <ul>
+      <li>právo na sebaurčenie aj pre „<strong>uhorskú vetvu československého kmeňa</strong>“ (= Slováci, zašifrované kvôli cenzúre),</li>
+      <li><strong>sloboda tlače a slova</strong>, všeobecné volebné právo, <strong>svetový mier</strong>.</li>
+    </ul>
+    <p><strong>Dopad:</strong> prvé verejné prihlásenie Slovákov k spoločnému štátu s Čechmi.</p>
+
+    <h3>Porada v Martine</h3>
+    <p>Tajné stretnutie politikov SNS. Uznesenie: Slováci majú <strong>právo na sebaurčenie</strong> a chcú sa podieľať na <strong>samostatnom štáte zo Slovenska, Čiech, Moravy a Sliezska</strong>. Za spoločný štát najviac tlačil <strong>Hlinka</strong>:</p>
+    <p><em>„Tisícročné manželstvo s Maďarmi sa nevydarilo. Musíme sa rozísť.“</em></p>
+
+    <div class="box warn"><span class="bt">Nepomýľ si</span>
+      <p><strong>Mikuláš 1. 5.</strong> = verejné zhromaždenie robotníkov. <strong>Martin 24. 5.</strong> = tajná porada politikov. <strong>Martin 30. 10.</strong> = verejná Martinská deklarácia.</p>
+    </div>
+  </div>
+</section>
+
+<section class="ch" id="c-oktober" data-part="c" hidden>
+  <header class="ch-h"><div class="kicker"></div><h2>Október 1918</h2></header>
+  <div class="sum"><div class="sum-t">V skratke</div><ul>
+    <li><span class="date">16. 10.</span> <strong>Manifest Karola I.</strong>: federácia, neúspech.</li>
+    <li><span class="date">19. 10.</span> <strong>Juriga</strong> v uhorskom sneme: sebaurčenie Slovákov.</li>
+    <li><span class="date">28. 10.</span> <strong>Andrássyho nóta</strong>, <strong>vyhlásenie ČSR</strong> v Prahe.</li>
+    <li><span class="date">30. 10.</span> <strong>Martinská deklarácia</strong>: Slováci sa pridávajú k ČSR.</li>
+  </ul></div>
+  <div class="body">
+    <ul class="tl">
+      <li><span class="d">16. 10.</span><mark>Manifest Karola I.</mark>: federácia <strong>rakúskej</strong> časti. Uhorska sa netýkal, Slovákom nepomohol. Prišiel neskoro.</li>
+      <li><span class="d">19. 10.</span><strong>Ferdiš Juriga</strong> v uhorskom sneme v mene SNR: <strong>právo Slovákov na sebaurčenie</strong>, snem nemá právo rozhodovať za Slovákov. Posledný prejav, symbolický odchod z Uhorska.</li>
+      <li><span class="d">27./28. 10.</span><mark>Andrássyho nóta</mark>.</li>
+      <li><span class="d">28. 10.</span><strong>Národný výbor vyhlásil ČSR</strong>.</li>
+      <li><span class="d">30. 10.</span><mark>Martinská deklarácia</mark>.</li>
+    </ul>
+
+    <h3>Andrássyho nóta</h3>
+    <p>Nóta Rakúsko-Uhorska Wilsonovi (minister <strong>Gyula Andrássy</strong>). Monarchia <strong>prijala všetky podmienky</strong> vrátane práva Čechoslovákov na sebaurčenie, aby dostala prímerie. <span class="tag">doplnené: meno</span></p>
+    <p><strong>Prečo to prijal?</strong> Ríša sa už rozpadala: vojna prehratá, armáda sa rúcala, národy si zakladali vlastné rady. Nóta rozpad nespôsobila, iba ho priznala. V Prahe to ľudia pochopili ako kapituláciu. <span class="tag">doplnené</span></p>
+
+    <h3>28. október 1918</h3>
+    <p><strong>Národný výbor v Prahe vyhlásil ČSR</strong>. Prvý zákon ponechal staré zákony a úrady, aby štát fungoval ďalej. <span class="tag">doplnené</span></p>
+    <p><em>„Lide československý! Tvůj odvěký sen stal se skutkem.“</em></p>
+    <p><strong>Muži 28. októbra:</strong> Švehla, Rašín, Stříbrný, Soukup a <strong>Šrobár</strong> (jediný Slovák).</p>
+
+    <h3>Martinská deklarácia (30. 10.)</h3>
+    <p>Zvolal ju <strong>Matúš Dula</strong> (SNS). Vznikla <strong>Slovenská národná rada</strong> (predseda Dula, tajomník <strong>Karol A. Medvecký</strong>). Autor textu <strong>Samuel Zoch</strong>.</p>
+    <ul>
+      <li>Slováci = „<strong>slovenská vetva jednotného československého národa</strong>“,</li>
+      <li>za Slovákov smie hovoriť <strong>jedine SNR</strong>, preberá moc,</li>
+      <li><strong>prihlásenie sa k ČSR</strong>.</li>
+    </ul>
+    <p>V Martine ešte nevedeli, že ČSR bola v Prahe vyhlásená dva dni predtým. <span class="tag">doplnené</span></p>
+
+    <div class="box warn"><span class="bt">Nepomýľ si</span>
+      <p>Martinská deklarácia súhlasí s tým, čo <strong>18. 10. sformuloval Wilson</strong> (odpoveď Rakúsko-Uhorsku). V ten istý deň bola aj Washingtonská deklarácia, ale to je iný dokument.</p>
+    </div>
+  </div>
+</section>
+
+<section class="ch" id="c-vyznam" data-part="c" hidden>
+  <header class="ch-h"><div class="kicker"></div><h2>Význam vzniku 1. ČSR</h2></header>
+  <div class="sum"><div class="sum-t">V skratke</div><ul>
+    <li><span class="date">1919–20</span> <strong>Parížska mierová konferencia</strong> (Kramář, Beneš, Osuský).</li>
+    <li><strong>Demokratická parlamentná republika</strong>, prezident <strong>Masaryk</strong> (zvolený 4-krát).</li>
+    <li><strong>Mnohonárodnostný štát</strong>: Nemci, Maďari, Rusíni.</li>
+    <li>Pre Slovákov: <strong>národná identita, elity, demokracia</strong>.</li>
+  </ul></div>
+  <div class="body">
+    <h3>Uznanie a hranice</h3>
+    <p>Na <mark>Parížskej mierovej konferencii</mark> rokovali <strong>Kramář, Beneš a Osuský</strong>. Hranice potvrdili zmluvy s Rakúskom (Saint-Germain, 1919) a s Maďarskom (<mark>Trianon</mark>, 4. 6. 1920). <span class="tag">doplnené: zmluvy</span></p>
+
+    <h3>Aký štát vznikol</h3>
+    <ul>
+      <li><mark>Demokratická parlamentná republika</mark>: najvyšší orgán je parlament volený ľuďmi.</li>
+      <li>Prezident <strong>T. G. Masaryk</strong>, parlament ho zvolil <strong>4-krát</strong> (1918, 1920, 1927, 1934). <span class="tag">doplnené: roky</span></li>
+      <li><mark>Mnohonárodnostný štát</mark>: <strong>Nemci (asi 3 mil.)</strong>, <strong>Maďari (asi 700 000)</strong>, <strong>Rusíni</strong>. Menšiny tvorili asi tretinu obyvateľov. <span class="tag">doplnené: tretina</span></li>
+    </ul>
+
+    <h3>Pre Slovákov</h3>
+    <ul>
+      <li><strong>Zavŕšenie národnej identifikácie</strong>: koniec maďarizácie, slovenčina v školách a úradoch.</li>
+      <li><strong>Vznik politických elít a inteligencie</strong>: nové školy, Univerzita Komenského (1919). <span class="tag">doplnené: UK</span></li>
+      <li><strong>Demokratická politická kultúra</strong>: voľby, strany, volebné právo aj pre ženy.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="ch" id="c-dokumenty" data-part="c" hidden>
+  <header class="ch-h"><div class="kicker"></div><h2>Dokumenty 1918</h2></header>
+  <div class="sum"><div class="sum-t">V skratke</div><ul>
+    <li><strong>Domáci odboj:</strong> Mikulášska rezolúcia, Provolání Národního výboru, Martinská deklarácia.</li>
+    <li><strong>Zahraničný odboj:</strong> Pittsburská dohoda, Washingtonská deklarácia.</li>
+    <li>Na písomke: a) domáci / zahraničný, b) názov a cieľ, c) dopad.</li>
+  </ul></div>
+  <div class="body">
+    <article class="doc">
+      <div class="doc-h"><h4>Mikulášska rezolúcia</h4><span class="date">1. 5. 1918</span><span class="pill dom">domáci</span></div>
+      <dl>
+        <dt>Cieľ</dt><dd>Sebaurčenie aj pre „uhorskú vetvu československého kmeňa“, sloboda tlače a slova, volebné právo, mier.</dd>
+        <dt>Dopad</dt><dd>Prvé verejné prihlásenie Slovákov k spoločnému štátu s Čechmi.</dd>
+        <dt>Spoznáš podľa</dt><dd>„My, robotníci…“, Liptovský Sv. Mikuláš.</dd>
+      </dl>
+      <blockquote>„…bezpodmienečné uznanie práva na sebaurčenie… teda aj uhorskej vetvy československého kmeňa…“</blockquote>
+    </article>
+    <article class="doc">
+      <div class="doc-h"><h4>Pittsburská dohoda</h4><span class="date">30. 5. 1918</span><span class="pill zah">zahraničný</span></div>
+      <dl>
+        <dt>Cieľ</dt><dd>Spojenie Čechov a Slovákov v samostatnom štáte. Slovensko s vlastnou administratívou, snemom a súdmi, slovenčina úradná, štát republika.</dd>
+        <dt>Dopad</dt><dd>Krajania v USA formálne predstavili víziu spoločného štátu a podporili Masaryka.</dd>
+        <dt>Spoznáš podľa</dt><dd>USA, Slovenská liga, Masaryk, „svoj snem a svoje súdy“.</dd>
+      </dl>
+      <blockquote>„Slovensko bude mať svoju vlastnú administratívu, svoj snem a svoje súdy.“</blockquote>
+    </article>
+    <article class="doc">
+      <div class="doc-h"><h4>Washingtonská deklarácia</h4><span class="date">18. 10. 1918</span><span class="pill zah">zahraničný</span></div>
+      <dl>
+        <dt>Cieľ</dt><dd>Vyhlásenie nezávislosti. Republika, slobody, odluka cirkvi, volebné právo, rovnoprávnosť žien, ochrana menšín.</dd>
+        <dt>Dopad</dt><dd>Nezávislosť vyhlásená navonok, ČSR získala podporu USA.</dd>
+        <dt>Spoznáš podľa</dt><dd>„národ Komenského“, Lincoln, podpisy Masaryk, Štefánik, Beneš.</dd>
+      </dl>
+      <blockquote>„Československý štát bude republikou… Cirkev bude oddelená od štátu.“</blockquote>
+    </article>
+    <article class="doc">
+      <div class="doc-h"><h4>Provolání Národního výboru</h4><span class="date">28. 10. 1918</span><span class="pill dom">domáci</span></div>
+      <dl>
+        <dt>Cieľ</dt><dd>Vyhlásenie samostatného štátu doma, Národný výbor preberá správu.</dd>
+        <dt>Dopad</dt><dd>Vznik ČSR. Staré zákony a úrady fungujú ďalej, ale pod Národným výborom.</dd>
+        <dt>Spoznáš podľa</dt><dd>Po česky, „Lide československý!“, päť mužov 28. októbra.</dd>
+      </dl>
+      <blockquote>„Lide československý! Tvůj odvěký sen stal se skutkem.“</blockquote>
+    </article>
+    <article class="doc">
+      <div class="doc-h"><h4>Martinská deklarácia</h4><span class="date">30. 10. 1918</span><span class="pill dom">domáci</span></div>
+      <dl>
+        <dt>Cieľ</dt><dd>Za Slovákov hovorí jedine SNR. Neobmedzené sebaurčenie, súhlas s Wilsonom (18. 10.).</dd>
+        <dt>Dopad</dt><dd>Slováci sa oficiálne prihlásili k ČSR.</dd>
+        <dt>Spoznáš podľa</dt><dd>Turčiansky Sv. Martin, „slovenská vetva“, Dula, Medvecký.</dd>
+      </dl>
+      <blockquote>„V mene slovenského národa… oprávnená je… hovoriť jedine Slovenská národná rada.“</blockquote>
+    </article>
+  </div>
+</section>
+
+<!-- ================= OPAKOVANIE ================= -->
+<section class="ch" id="o-osi" data-part="o" hidden>
+  <header class="ch-h"><div class="kicker"></div><h2>Časové osi</h2></header>
+  <div class="sum"><div class="sum-t">Dátumy, ktoré musíš vedieť</div><ul>
+    <li><span class="date">15. 3. 1917</span> abdikácia Mikuláša II.</li>
+    <li><span class="date">24.–25. 10. 1917</span> Októbrová revolúcia</li>
+    <li><span class="date">30. 5. 1918</span> Pittsburská dohoda</li>
+    <li><span class="date">18. 10. 1918</span> Washingtonská deklarácia</li>
+    <li><span class="date">28. 10. 1918</span> vyhlásenie ČSR</li>
+    <li><span class="date">30. 10. 1918</span> Martinská deklarácia</li>
+  </ul></div>
+  <div class="body">
+    <h3>Rusko</h3>
+    <ul class="tl" data-part="r">
+      <li><span class="d">1903</span>Rozdelenie na boľševikov a menševikov</li>
+      <li><span class="d">feb./mar. 1917</span>Februárová revolúcia, abdikácia cára</li>
+      <li><span class="d">apríl 1917</span>Aprílové tézy</li>
+      <li><span class="d">okt./nov. 1917</span>Októbrová revolúcia, dekréty</li>
+      <li><span class="d">jan. 1918</span>Rozohnanie Ústavodarného zhromaždenia</li>
+      <li><span class="d">3. 3. 1918</span>Brestlitovský mier, Komunistická strana, Moskva</li>
+      <li><span class="d">1918–1920/22</span>Občianska vojna, vojnový komunizmus</li>
+      <li><span class="d">1921</span>NEP</li>
+      <li><span class="d">30. 12. 1922</span>Vznik ZSSR</li>
+      <li><span class="d">21. 1. 1924</span>Smrť Lenina, po ňom Stalin</li>
+    </ul>
+    <h3>Vznik ČSR</h3>
+    <ul class="tl" data-part="c">
+      <li><span class="d">1914</span>Pasivita doma, vznik légií</li>
+      <li><span class="d">1915</span>Independent Bohemia, Clevelandská dohoda</li>
+      <li><span class="d">1916</span>ČSNR v Paríži, smrť Františka Jozefa I.</li>
+      <li><span class="d">2. 7. 1917</span>Zborov</li>
+      <li><span class="d">6. 1. 1918</span>Trojkráľová deklarácia</li>
+      <li><span class="d">8. 1. 1918</span>14 bodov Wilsona</li>
+      <li><span class="d">1. 5. 1918</span>Mikulášska rezolúcia</li>
+      <li><span class="d">24. 5. 1918</span>Tajná porada v Martine</li>
+      <li><span class="d">30. 5. 1918</span>Pittsburská dohoda</li>
+      <li><span class="d">13. 7. 1918</span>Národný výbor</li>
+      <li><span class="d">14. 10. 1918</span>Dočasná vláda v Paríži</li>
+      <li><span class="d">16. 10. 1918</span>Manifest Karola I.</li>
+      <li><span class="d">18. 10. 1918</span>Washingtonská deklarácia</li>
+      <li><span class="d">19. 10. 1918</span>Juriga v uhorskom sneme</li>
+      <li><span class="d">28. 10. 1918</span>Vyhlásenie ČSR</li>
+      <li><span class="d">30. 10. 1918</span>Martinská deklarácia</li>
+      <li><span class="d">1919–1920</span>Parížska konferencia, Trianon</li>
+    </ul>
+  </div>
+</section>
+
+<section class="ch" id="o-otazky" data-part="o" hidden>
+  <header class="ch-h"><div class="kicker"></div><h2>Otázky na zopakovanie</h2></header>
+  <div class="sum"><div class="sum-t">Ako témy súvisia</div><ul>
+    <li><strong>Légie</strong> bojovali v Rusku (Zborov, občianska vojna) a ich sláva pomohla uznať ČSNR.</li>
+    <li><strong>Sebaurčenie</strong> hlásali Wilson aj Lenin, čo oslabovalo Rakúsko-Uhorsko.</li>
+    <li><strong>Slovenská republika rád</strong> (1919) vznikla pod vplyvom ruskej revolúcie.</li>
+  </ul></div>
+  <div class="body">
+    <p>Najprv si odpoveď povedz sám, potom ťukni na otázku.</p>
+    <details><summary>Čo je dvojvládie a kto ho tvoril?</summary><p>Po Februárovej revolúcii vládli naraz Dočasná vláda (Ľvov, neskôr Kerenskij) a soviety (najmä Petrohradský).</p></details>
+    <details><summary>Prečo sa robotníci vzbúrili ľahšie ako roľníci?</summary><p>Žili pokope v mestách a továrňach, ľahko sa zorganizovali. Roľníci žili roztrúsene.</p></details>
+    <details><summary>V čom sa líšili boľševici od menševikov?</summary><p>Boľševici (Lenin) chceli revolúciu hneď, menševici najprv kapitalizmus.</p></details>
+    <details><summary>Kto boli eseri?</summary><p>Socialisti-revolucionári, nemarxistická roľnícka strana, v roku 1917 najpočetnejšia.</p></details>
+    <details><summary>Čo obsahovali Aprílové tézy?</summary><p>Žiadna podpora Dočasnej vláde, „Všetka moc sovietom!“, diktatúra proletariátu, mier, pôda, kontrola tovární, sebaurčenie národov.</p></details>
+    <details><summary>Ktoré dekréty vydali boľševici po prevrate?</summary><p>Dekrét o mieri, Dekrét o pôde, Deklarácia práv národov Ruska.</p></details>
+    <details><summary>Prečo zaviedli NEP?</summary><p>Vojnový komunizmus spôsobil hlad a povstania. NEP (1921) povolil malý obchod a naturálnu daň.</p></details>
+    <details><summary>Kedy vznikol ZSSR?</summary><p>30. 12. 1922.</p></details>
+    <details><summary>Tri skupiny príčin vzniku ČSR?</summary><p>Historické (štátne právo), ideologické (čechoslovakizmus), politické (vojna, odboj, sebaurčenie, osobnosti).</p></details>
+    <details><summary>Funkcie Masaryka, Štefánika a Beneša v ČSNR?</summary><p>Masaryk predseda, Štefánik podpredseda, Beneš tajomník.</p></details>
+    <details><summary>Clevelandská vs. Pittsburská dohoda?</summary><p>Clevelandská 1915: federácia, samostatné Slovensko. Pittsburská 1918: spoločná ČSR, autonómia Slovenska.</p></details>
+    <details><summary>Čo bola Mikulášska rezolúcia?</summary><p>1. 5. 1918, verejné zhromaždenie robotníkov v Liptovskom Mikuláši, Šrobár. Sebaurčenie aj pre Slovákov.</p></details>
+    <details><summary>Čo sa dohodlo 24. 5. 1918 v Martine?</summary><p>Tajne: Slováci chcú spoločný štát s Čechmi. Hlinka: „Tisícročné manželstvo s Maďarmi sa nevydarilo.“</p></details>
+    <details><summary>Ktoré dokumenty sú domáci a ktoré zahraničný odboj?</summary><p>Domáci: Mikulášska rezolúcia, Provolání, Martinská deklarácia. Zahraničný: Pittsburská dohoda, Washingtonská deklarácia.</p></details>
+    <details><summary>Čo sľubovala Washingtonská deklarácia?</summary><p>Republiku, slobody, odluku cirkvi, volebné právo, rovnoprávnosť žien, ochranu menšín.</p></details>
+    <details><summary>Čo bola Andrássyho nóta?</summary><p>Rakúsko-Uhorsko prijalo Wilsonove podmienky vrátane sebaurčenia. Impulz na vyhlásenie ČSR 28. 10.</p></details>
+    <details><summary>Kto boli muži 28. októbra?</summary><p>Švehla, Rašín, Stříbrný, Soukup, Šrobár.</p></details>
+    <details><summary>Čo bola Martinská deklarácia?</summary><p>30. 10. 1918, SNR (Dula, Medvecký, autor Zoch): Slováci sa prihlásili k ČSR.</p></details>
+    <details><summary>Aký štát bola 1. ČSR?</summary><p>Demokratická parlamentná republika, prezident Masaryk, mnohonárodnostný štát.</p></details>
+    <details><summary>Čo znamenal vznik ČSR pre Slovákov?</summary><p>Národná identita, politické elity a inteligencia, demokratická politická kultúra.</p></details>
+  </div>
+</section>
+
+</main>
+
+<nav class="bar" id="bar" aria-label="Navigácia kapitol">
+  <div class="bar-in">
+    <button class="prev" id="prevBtn" type="button">‹ Späť</button>
+    <span class="count" id="count"></span>
+    <button class="next" id="nextBtn" type="button">Ďalej ›</button>
+  </div>
+</nav>
+
+<script>
+(function () {
+  var PARTS = { r: "Rusko 1917", c: "Vznik ČSR", o: "Opakovanie" };
+  var KEY_L = "dejepis-v2-learned", KEY_P = "dejepis-v2-last";
+  var chapters = Array.prototype.slice.call(document.querySelectorAll("section.ch"));
+  var home = document.getElementById("domov");
+  var ids = chapters.map(function (c) { return c.id; });
+
+  function load(k, d) { try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
+  function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  var learned = load(KEY_L, {});
+  var last = load(KEY_P, null);
+
+  // per-part numbering + footer on each chapter
+  var counts = {};
+  chapters.forEach(function (c, i) {
+    var p = c.dataset.part;
+    counts[p] = (counts[p] || 0) + 1;
+    c.dataset.n = counts[p];
+    c.querySelector(".kicker").textContent = PARTS[p] + " · kapitola " + counts[p];
+    var end = document.createElement("div");
+    end.className = "ch-end";
+    end.innerHTML = '<button class="learn" type="button" aria-pressed="false"><span class="check"></span><span class="lt">Túto kapitolu viem</span></button>' +
+      '<small>Ťukni, keď vieš povedať zhrnutie bez pozerania.</small>';
+    c.appendChild(end);
+    end.querySelector(".learn").addEventListener("click", function () {
+      learned[c.id] = !learned[c.id];
+      save(KEY_L, learned);
+      render();
+    });
+  });
+
+  // table of contents on home
+  var wrap = document.getElementById("tocWrap");
+  Object.keys(PARTS).forEach(function (p) {
+    var list = chapters.filter(function (c) { return c.dataset.part === p; });
+    var box = document.createElement("div");
+    box.className = "toc-part"; box.dataset.part = p;
+    box.innerHTML = '<h2>' + PARTS[p] + ' <span data-pc="' + p + '"></span></h2>';
+    var ul = document.createElement("ul"); ul.className = "toc-list";
+    list.forEach(function (c) {
+      var li = document.createElement("li"); li.dataset.id = c.id;
+      li.innerHTML = '<button type="button"><span class="num">' + c.dataset.n + '</span><span class="t">' +
+        c.querySelector("h2").textContent + '</span><span class="check"></span></button>';
+      li.querySelector("button").addEventListener("click", function () { go(c.id); });
+      ul.appendChild(li);
+    });
+    box.appendChild(ul); wrap.appendChild(box);
+  });
+
+  var current = null;
+
+  function go(id) {
+    if (ids.indexOf(id) === -1) id = "domov";
+    try { if (location.hash !== "#" + id) location.hash = id; } catch (e) {}
+    show(id);
+  }
+
+  function show(id) {
+    current = id;
+    home.hidden = id !== "domov";
+    chapters.forEach(function (c) { c.hidden = c.id !== id; });
+    if (id !== "domov") { last = id; save(KEY_P, last); }
+    render();
+    window.scrollTo(0, 0);
+  }
+
+  function render() {
+    var total = ids.length;
+    var done = ids.filter(function (i) { return learned[i]; }).length;
+    var idx = ids.indexOf(current);
+    var ch = chapters[idx];
+    var top = document.getElementById("top");
+    var bar = document.getElementById("bar");
+
+    // top bar
+    if (ch) {
+      top.dataset.part = ch.dataset.part; bar.dataset.part = ch.dataset.part;
+      document.getElementById("topTitle").innerHTML = "<b>" + PARTS[ch.dataset.part] + "</b> · " + ch.querySelector("h2").textContent;
+      document.getElementById("topProg").style.width = ((idx + 1) / total * 100) + "%";
+    } else {
+      delete top.dataset.part; delete bar.dataset.part;
+      document.getElementById("topTitle").innerHTML = "<b>Dejepis</b> · obsah";
+      document.getElementById("topProg").style.width = (done / total * 100) + "%";
+    }
+    document.getElementById("tocBtn").hidden = !ch;
+
+    // bottom bar
+    var prev = document.getElementById("prevBtn"), next = document.getElementById("nextBtn");
+    if (ch) {
+      prev.disabled = false;
+      prev.textContent = idx === 0 ? "‹ Obsah" : "‹ Späť";
+      next.textContent = idx === total - 1 ? "Obsah ›" : "Ďalej ›";
+      document.getElementById("count").textContent = (idx + 1) + " / " + total;
+    } else {
+      prev.disabled = true;
+      next.textContent = last ? "Pokračovať ›" : "Začať ›";
+      document.getElementById("count").textContent = done + " / " + total + " ✓";
+    }
+
+    // learned buttons
+    chapters.forEach(function (c) {
+      var b = c.querySelector(".learn"), on = !!learned[c.id];
+      b.setAttribute("aria-pressed", on ? "true" : "false");
+      b.querySelector(".lt").textContent = on ? "Viem to" : "Túto kapitolu viem";
+    });
+
+    // home
+    document.getElementById("progTxt").textContent = done + " / " + total;
+    document.getElementById("progBar").style.width = (done / total * 100) + "%";
+    Array.prototype.forEach.call(document.querySelectorAll(".toc-list li"), function (li) {
+      li.classList.toggle("done", !!learned[li.dataset.id]);
+    });
+    Object.keys(PARTS).forEach(function (p) {
+      var list = chapters.filter(function (c) { return c.dataset.part === p; });
+      var d = list.filter(function (c) { return learned[c.id]; }).length;
+      document.querySelector('[data-pc="' + p + '"]').textContent = d + " / " + list.length;
+    });
+    var target = nextTarget();
+    var tc = document.getElementById(target);
+    document.getElementById("continueLbl").textContent = last ? "Pokračuj" : "Začni tu";
+    document.getElementById("continueTitle").textContent = tc.querySelector("h2").textContent;
+  }
+
+  function nextTarget() {
+    if (last && ids.indexOf(last) !== -1) return last;
+    for (var i = 0; i < ids.length; i++) if (!learned[ids[i]]) return ids[i];
+    return ids[0];
+  }
+
+  document.getElementById("continueBtn").addEventListener("click", function () { go(nextTarget()); });
+  document.getElementById("tocBtn").addEventListener("click", function () { go("domov"); });
+  document.getElementById("prevBtn").addEventListener("click", function () {
+    var i = ids.indexOf(current);
+    go(i <= 0 ? "domov" : ids[i - 1]);
+  });
+  document.getElementById("nextBtn").addEventListener("click", function () {
+    var i = ids.indexOf(current);
+    if (i === -1) go(nextTarget());
+    else go(i === ids.length - 1 ? "domov" : ids[i + 1]);
+  });
+  window.addEventListener("hashchange", function () {
+    var h = location.hash.slice(1) || "domov";
+    if (h !== current) show(ids.indexOf(h) === -1 ? "domov" : h);
+  });
+
+  var start = (location.hash || "").slice(1);
+  show(ids.indexOf(start) === -1 ? "domov" : start);
+})();
+</script>
+</body>
+</html>
